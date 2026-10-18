@@ -1,0 +1,53 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  pull-request:
+    if: "!startsWith(github.event.head_commit.message, 'chore: release v')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: generate changelog
+        id: git-cliff
+        uses: orhun/git-cliff-action@v4
+        with:
+          args: --bump --output CHANGELOG.md
+      - name: update release pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: release
+          commit-message: "chore: release ${{ steps.git-cliff.outputs.version }}"
+          title: "chore: release ${{ steps.git-cliff.outputs.version }}"
+          body: ""
+
+  tag-and-release:
+    if: "startsWith(github.event.head_commit.message, 'chore: release v')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: generate release notes
+        id: git-cliff
+        uses: orhun/git-cliff-action@v4
+        with:
+          args: --bump --unreleased --strip header
+      - name: tag and release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.git-cliff.outputs.version }}
+          body: ${{ steps.git-cliff.outputs.content }}
