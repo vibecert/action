@@ -17,7 +17,7 @@ jobs:
   vibecert:
     runs-on: ubuntu-latest
     steps:
-      - uses: vibecert/action@v1
+      - uses: vibecert/action@v1.0.0
 ```
 
 Pull requests from forks get a read-only token, so commenting on them needs `pull_request_target` in place of `pull_request`.
