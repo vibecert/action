@@ -1,0 +1,33 @@
+name: VibeCert
+description: Comment a pull request's VibeCert badge, or a nudge to get one
+inputs:
+  site-url:
+    description: Where certificates are served from
+    default: https://vibecert.github.io
+  github-token:
+    description: The token used to comment
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v7
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+        persist-credentials: false
+    - uses: astral-sh/setup-uv@v10
+    - name: Write the comment
+      shell: bash
+      env:
+        SITE_URL: ${{ inputs.site-url }}
+        VIBECERT: git+https://git.sr.ht/~martinchapman/claude-skills@18b442eb3cc2e898b3c1ec3ca2daa7b1c1e57e55#subdirectory=vibecert/scripts
+      run: >-
+        uvx --from "$VIBECERT" vibecert-verify --comment
+        --branch "$GITHUB_HEAD_REF" --base "origin/$GITHUB_BASE_REF"
+        --site-url "$SITE_URL" > "$RUNNER_TEMP/vibecert.md"
+    - uses: marocchino/sticky-pull-request-comment@v3
+      with:
+        header: vibecert
+        path: ${{ runner.temp }}/vibecert.md
+        ignore_empty: true
+        GITHUB_TOKEN: ${{ inputs.github-token }}
