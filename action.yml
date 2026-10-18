@@ -20,7 +20,7 @@ runs:
       shell: bash
       env:
         SITE_URL: ${{ inputs.site-url }}
-        VIBECERT: git+https://git.sr.ht/~martinchapman/claude-skills@18b442eb3cc2e898b3c1ec3ca2daa7b1c1e57e55#subdirectory=vibecert/scripts
+        VIBECERT: git+https://github.com/vibecert/skill@5ec0dffda680cc6f3415204179e8c125e0f98854#subdirectory=scripts
       run: >-
         uvx --from "$VIBECERT" vibecert-verify --comment
         --branch "$GITHUB_HEAD_REF" --base "origin/$GITHUB_BASE_REF"
