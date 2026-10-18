@@ -15,7 +15,7 @@ runs:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
         persist-credentials: false
-    - uses: astral-sh/setup-uv@v10
+    - uses: astral-sh/setup-uv@v10.2.0
     - name: Write the comment
       shell: bash
       env:
@@ -25,7 +25,7 @@ runs:
         uvx --from "$VIBECERT" vibecert-verify --comment
         --branch "$GITHUB_HEAD_REF" --base "origin/$GITHUB_BASE_REF"
         --site-url "$SITE_URL" > "$RUNNER_TEMP/vibecert.md"
-    - uses: marocchino/sticky-pull-request-comment@v3
+    - uses: marocchino/sticky-pull-request-comment@v3.0.5
       with:
         header: vibecert
         path: ${{ runner.temp }}/vibecert.md
