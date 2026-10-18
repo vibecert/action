@@ -1,0 +1,5 @@
+[bump]
+initial_tag = "v1.0.0"
+
+[git]
+require_conventional = true
