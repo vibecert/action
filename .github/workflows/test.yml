@@ -9,3 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./
+      - uses: ./
+        with:
+          site-url: https://vibecert.invalid
