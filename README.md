@@ -5,6 +5,7 @@ Posts a pull request's VibeCert badge, or a nudge to get one, as a comment.
 The comment shows the branch's [VibeCert](https://l.martinchapman.co.uk/vibecert) badge when a certificate exists, with anything that makes it out of date.
 When there is none but a commit credits a generative tool (a `Co-authored-by` trailer or a `Generated with` line), it encourages scoring the branch instead.
 Otherwise nothing is posted, and one comment is updated on each push rather than a new one added.
+A failure within the action (e.g. the certificate site being down) leaves a warning rather than failing the job.
 
 ## Usage
 

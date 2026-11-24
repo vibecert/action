@@ -11,21 +11,27 @@ runs:
   using: composite
   steps:
     - uses: actions/checkout@v7
+      continue-on-error: true
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
         persist-credentials: false
     - uses: astral-sh/setup-uv@v10.2.0
+      continue-on-error: true
     - name: Write the comment
       shell: bash
       env:
         SITE_URL: ${{ inputs.site-url }}
         VIBECERT: git+https://github.com/vibecert/skill@cd7c7b8336939c913d1cf5b296f975600dc84231#subdirectory=scripts
-      run: >-
-        uvx --from "$VIBECERT" vibecert-verify --comment
-        --branch "$GITHUB_HEAD_REF" --base "origin/$GITHUB_BASE_REF"
-        --site-url "$SITE_URL" > "$RUNNER_TEMP/vibecert.md"
+      run: |
+        if ! uvx --from "$VIBECERT" vibecert-verify --comment \
+          --branch "$GITHUB_HEAD_REF" --base "origin/$GITHUB_BASE_REF" \
+          --site-url "$SITE_URL" > "$RUNNER_TEMP/vibecert.md"; then
+          echo "::warning::VibeCert could not check this branch, so no comment is posted"
+          : > "$RUNNER_TEMP/vibecert.md"
+        fi
     - uses: marocchino/sticky-pull-request-comment@v3.0.5
+      continue-on-error: true
       with:
         header: vibecert
         path: ${{ runner.temp }}/vibecert.md
